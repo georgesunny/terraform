@@ -3,19 +3,25 @@
 set -x
 
 yum install -y epel-release
-sudo amazon-linux-extras install epel -y
+amazon-linux-extras install epel -y
 yum install -y ansible python-pip wget jq zip unzip
-sudo yum install amazon-cloudwatch-agent -y
 
-pip install awscli --upgrade --ignore-installed six
-chmod +x /bin/aws
 
-yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
-systemctl enable amazon-ssm-agent
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+./aws/install
 
 aws s3 sync s3://${s3_bucket_name}/ /opt/ --region ${region}
 cd /opt/
 unzip ansible.zip
-chown ansible:ansible /opt/ansible -R
-cd /opt/ansible
-ansible-playbook playbook.yml
+
+yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
+systemctl enable amazon-ssm-agent
+yum install amazon-cloudwatch-agent -y
+
+sudo su - ec2-user <<EOF
+ansible-playbook /opt/ansible/playbook.yml
+echo "@reboot sleep 60 && ansible-playbook /opt/ansible/playbook.yml" > /tmp/ansible_load
+crontab /tmp/ansible_load
+rm -f /tmp/ansible_load
+EOF

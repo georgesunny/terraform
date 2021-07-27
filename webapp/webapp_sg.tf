@@ -16,7 +16,7 @@ resource "aws_security_group" "webapp_sg" {
     from_port   = 8080
     to_port     = 8080
     protocol    = "tcp"
-    security_groups  = aws_security_group.webapp_lb_sg
+    security_groups  = [aws_security_group.webapp_lb_sg.id]
   }
 
   egress {

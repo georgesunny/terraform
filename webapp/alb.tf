@@ -5,8 +5,6 @@ resource "aws_lb" "webapp_alb" {
   security_groups    = [aws_security_group.webapp_lb_sg.id]
   subnets            = var.pub_subnet_id
 
-  enable_deletion_protection = true
-
   tags = {
     Name = "${var.org_name}_${var.app_name}_${var.environment}_webapp_alb"
     env = var.environment

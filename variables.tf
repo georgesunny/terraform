@@ -47,7 +47,7 @@ variable "webapp_instance_ami" {
     default = "ami-03ac5a9b225e99b02"
 }
 variable "webapp_instance_type" {
-    default = "t3.micro"
+    default = "t3.small"
 }
 variable "webapp_disk_size" {
   default = "8"

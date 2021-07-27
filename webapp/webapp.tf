@@ -11,7 +11,7 @@ resource "aws_launch_template" "webbapp_lt" {
   }
   user_data            = base64encode(data.template_cloudinit_config.webapp_bootstrap.rendered)
   iam_instance_profile { name = aws_iam_instance_profile.webapp_instance_profile.name }
-  key_name                  = "${var.org_name}_${var.app_name}_${var.environment}_keypair.pem"
+  key_name                  = "${var.org_name}_${var.app_name}_${var.environment}.pem"
   vpc_security_group_ids    = [aws_security_group.webapp_sg.id]
   image_id      = var.webapp_instance_ami
   instance_type = var.webapp_instance_type
@@ -39,8 +39,6 @@ resource "aws_launch_template" "webbapp_lt" {
     app = var.app_name
     created_by = "terraform"
   }
-
-
 }
 
 resource "aws_autoscaling_group" "webapp_asg" {
@@ -49,6 +47,7 @@ resource "aws_autoscaling_group" "webapp_asg" {
   max_size           = 3
   min_size           = 2
   vpc_zone_identifier = var.app_subnet_id
+  target_group_arns = [aws_lb_target_group.webapp_tg.arn]
   launch_template {
     id      = aws_launch_template.webbapp_lt.id
     version = "$Latest"
@@ -78,15 +77,4 @@ resource "aws_autoscaling_group" "webapp_asg" {
         launch_template
       ]
   }    
-}
-
-resource "aws_autoscaling_attachment" "asg_attachment_tg" {
-  autoscaling_group_name = aws_autoscaling_group.webapp_asg.id
-  alb_target_group_arn   = aws_lb_target_group.webapp_tg.arn
-  lifecycle {
-      ignore_changes = [
-        alb_target_group_arn,
-        autoscaling_group_name
-      ]
-  }  
 }
