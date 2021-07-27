@@ -28,7 +28,8 @@ Create the zip file for ansible folder and place in home location of terraform
     * webapp sg - security group to allow trafic to webapp
     * webapp conatins autoscaling group and launch template.
 * Ansible
-    This folder containes ansible play book to install nginx server and required html file to render when alb dns name is hit in browser
+    This folder containes ansible play book to install nginx server and required html file to render when alb dns name is hit in browser.
+    webapp will use the zip file in launch template to deploy the nginx
 
 #### Getting Started
 
