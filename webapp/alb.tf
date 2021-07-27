@@ -22,7 +22,8 @@ resource "aws_lb_target_group" "webapp_tg" {
   vpc_id   = var.vpc_id
   target_type = "instance"
   health_check {
-    protocol = "HTTPS"
+    protocol = "HTTP"
+    port = 8080
     path     = "/"
   }
   tags = {
